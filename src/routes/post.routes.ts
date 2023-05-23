@@ -3,10 +3,12 @@ import { createPostController } from "../controllers/posts/create-post.controlle
 import { deletePostController } from "../controllers/posts/delete-post.controller";
 import { getPostsController } from "../controllers/posts/get-posts.controller";
 import { updatePostController } from "../controllers/posts/update-post.controller";
+import { getPostBySlugController } from "../controllers/posts/get-post-by-slug.controller";
 
 export let postRoutes = Router();
 
 postRoutes.post("", createPostController as any);
 postRoutes.get("", getPostsController as any);
+postRoutes.get("/slug/:slug", getPostBySlugController as any);
 postRoutes.patch("", updatePostController as any);
 postRoutes.delete("/:id", deletePostController as any);

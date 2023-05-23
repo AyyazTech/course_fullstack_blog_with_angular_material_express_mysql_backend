@@ -12,9 +12,38 @@ export class PostsService {
       return response[0][0];
   }
 
-  static async getPosts() {
+  static async getPostBySlug(slug: string) {
     let connection = await db;
-    let response: any = await connection.query(`select * from posts`);
+    let response: any = await connection.query(
+      `select  posts.*, categories.title as categoryTitle , categories.slug as categorySlug, users.name as userName from posts  
+    left join categories on categories.id = posts.id 
+    left join users on users.id = posts.userId  where posts.slug='${slug}'`
+    );
+
+    if (response && response.length > 0 && response[0].length > 0)
+      return response[0][0];
+  }
+
+  static async getPosts(
+    options: { categorySlug?: string; authorId?: number; tagId?: number } = {}
+  ) {
+    let connection = await db;
+    let conditions = [];
+
+    if (options.categorySlug)
+      conditions.push(`categories.slug='${options.categorySlug}'`);
+    if (options.authorId) conditions.push(`posts.userId='${options.authorId}'`);
+    if (options.tagId)
+      conditions.push(
+        `posts.id in (select postId from post_tags where post_tags.tagId = ${options.tagId})`
+      );
+
+    let response: any =
+      await connection.query(`select posts.*, categories.title as categoryTitle , categories.slug as categorySlug, users.name as userName from posts 
+    left join categories on categories.id = posts.id 
+    left join users on users.id = posts.userId 
+     ${conditions.length > 0 ? "where " : ""} ${conditions.join(" and ")}
+    `);
 
     return response[0];
   }

@@ -5,4 +5,5 @@ export let db = mysql.createConnection({
   user: "root",
   password: "",
   database: "blog",
+  port: 3307,
 });

@@ -2,11 +2,14 @@ import express, { NextFunction, Request, Response } from "express";
 import { Connection } from "mysql2/promise";
 import { db } from "./db";
 import { routes } from "./routes/index.routes";
+import cors from "cors";
 export interface CustomRequest extends Request {
   db: Connection;
 }
 
 let app = express();
+
+app.use(cors());
 
 async function dbMiddleware(
   req: CustomRequest,

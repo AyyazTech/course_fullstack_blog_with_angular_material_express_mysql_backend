@@ -11,6 +11,16 @@ export class CategoriesService {
       return response[0][0];
   }
 
+  static async getCategorySlug(slug: string) {
+    let connection = await db;
+    let response: any = await connection.query(
+      `select * from categories where slug = '${slug}'`
+    );
+
+    if (response && response.length > 0 && response[0].length > 0)
+      return response[0][0];
+  }
+
   static async getCategories() {
     let connection = await db;
     let response = await connection.query(`select * from categories`);
