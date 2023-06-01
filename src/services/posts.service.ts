@@ -25,25 +25,33 @@ export class PostsService {
   }
 
   static async getPosts(
-    options: { categorySlug?: string; authorId?: number; tagId?: number } = {}
+    options: {
+      categorySlug?: string;
+      authorId?: number;
+      tagId?: number;
+      searchKeyword?: string;
+    } = {}
   ) {
     let connection = await db;
     let conditions = [];
 
     if (options.categorySlug)
       conditions.push(`categories.slug='${options.categorySlug}'`);
+    if (options.searchKeyword)
+      conditions.push(`posts.title like '%${options.searchKeyword}%'`);
     if (options.authorId) conditions.push(`posts.userId='${options.authorId}'`);
     if (options.tagId)
       conditions.push(
         `posts.id in (select postId from post_tags where post_tags.tagId = ${options.tagId})`
       );
-
-    let response: any =
-      await connection.query(`select posts.*, categories.title as categoryTitle , categories.slug as categorySlug, users.name as userName from posts 
-    left join categories on categories.id = posts.id 
+    let query = `select posts.*, categories.title as categoryTitle , categories.slug as categorySlug, users.name as userName from posts 
+    left join categories on categories.id = posts.categoryId 
     left join users on users.id = posts.userId 
      ${conditions.length > 0 ? "where " : ""} ${conditions.join(" and ")}
-    `);
+
+     order by createdAt desc
+    `;
+    let response: any = await connection.query(query);
 
     return response[0];
   }

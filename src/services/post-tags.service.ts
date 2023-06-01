@@ -38,4 +38,12 @@ export class PostTagsService {
       `delete from ${PostTagsService.tableName}  where id = ${id}`
     );
   }
+
+  static async deletePostTagByPostId(postId: any) {
+    let connection = await db;
+
+    return connection.query(
+      `delete from ${PostTagsService.tableName}  where postId = ${postId}`
+    );
+  }
 }
